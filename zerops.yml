@@ -1,0 +1,42 @@
+zerops:
+  - setup: nextcloud
+    run: 
+      os: ubuntu
+      base: php-nginx@8.4
+      envVariables: 
+        NEXTCLOUD_VERSION: 31.0.5
+        DATABASE: pgsql
+        DATABASE_HOST: pg
+        DATABASE_PORT: $pg_port
+        DATABASE_NAME: $pg_dbName
+        DATABASE_USER: $pg_user
+        DATABASE_PASSWORD: $pg_password
+        ADMIN_USER: admin
+        # TODO: Readme.
+        SERVER_DOMAIN: $zeropsSubdomain
+        STORAGE_BUCKET: $storage_bucketName
+        STORAGE_HOSTNAME: $storage_apiHost
+        STORAGE_ACCESS_KEY: $storage_accessKeyId
+        STORAGE_SECRET_KEY: $storage_secretAccessKey
+        # TODO: This.
+#        PHP_INI_opcache.interned_strings_buffer: 16
+        PHP_INI_memory_limit: 512M
+      prepareCommands:
+        - sudo apt-get update
+        - sudo apt-get upgrade -y
+        - sudo apt-get install -y php-gd php-mysql php-curl php-mbstring php-intl php-gmp php-xml php-imagick php-zip
+        - wget https://download.nextcloud.com/server/releases/nextcloud-$NEXTCLOUD_VERSION.tar.bz2
+        - wget https://download.nextcloud.com/server/releases/nextcloud-$NEXTCLOUD_VERSION.tar.bz2.sha256
+        - sha256sum --ignore-missing -c nextcloud-$NEXTCLOUD_VERSION.tar.bz2.sha256 < nextcloud-$NEXTCLOUD_VERSION.tar.bz2
+        - tar -xjvf nextcloud-$NEXTCLOUD_VERSION.tar.bz2
+        - sudo cp -r nextcloud /var/www
+        - sudo chown -R zerops:zerops /var/www/nextcloud
+        - rm -r nextcloud nextcloud-$NEXTCLOUD_VERSION.tar.bz2 nextcloud-$NEXTCLOUD_VERSION.tar.bz2.sha256
+        - |
+          cat << EOF | sudo tee /etc/systemd/network/10-interface.network > /dev/null
+          [Match]
+          Name=eth0
+          EOF
+#      initCommands:
+#        - zsc execOnce "install" -- /var/www/install.sh
+      siteConfigPath: nginx.conf.tmpl

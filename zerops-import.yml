@@ -1,0 +1,25 @@
+#yamlPreprocessor=on
+project: 
+  name: recipe-nextcloud
+  description: Your own private Nextcloud deployment on Zerops.
+  tags:
+    - zerops-recipe
+services:
+  - priority: 10
+    hostname: pg
+    type: postgresql@17
+    mode: NON_HA
+  - priority: 10
+    hostname: storage
+    type: object-storage
+    objectStorageSize: 1
+    objectStoragePolicy: private
+  - hostname: nextcloud
+    type: php-nginx@8.4
+    verticalAutoscaling:
+      minRam: 0.5
+      minFreeRam: 0.25
+    maxContainers: 1
+    envSecrets:
+      ADMIN_PASSWORD: <@generateRandomString(<12>)>
+
