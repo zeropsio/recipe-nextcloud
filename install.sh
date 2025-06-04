@@ -5,7 +5,7 @@ set -e -x
 cd /var/www/nextcloud
 
 if [ "$NEXTCLOUD_INSTALLED" = "1" ]; then
-    zsc envReplace ../config.php /var/www/nextcloud/config/config.php
+    zsc envReplace ../config.php.tmpl /var/www/nextcloud/config/config.php
     echo "# Nextcloud data directory" > /var/www/nextcloud/data/.ncdata
 else
     php occ maintenance:install \

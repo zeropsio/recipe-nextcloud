@@ -18,8 +18,10 @@ services:
     type: php-nginx@8.4
     verticalAutoscaling:
       minRam: 0.5
-      minFreeRam: 0.25
+      minFreeRamGB: 0.25
     maxContainers: 1
     envSecrets:
       ADMIN_PASSWORD: <@generateRandomString(<12>)>
+    buildFromGit: https://github.com/zeropsio/recipe-nextcloud
+    enableSubdomainAccess: true
 
